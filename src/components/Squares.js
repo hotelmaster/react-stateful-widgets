@@ -14,7 +14,8 @@ Only one square (or none) can be active at any given point.
 Find comments below to help you along.
 */
 
-import React from 'react';
+// import state hook because we have two slices of state to use
+import React, {useState} from 'react';
 
 // Use this variable ONLY to initialize a slice of state!
 const listOfSquareIds = ['sqA', 'sqB', 'sqC', 'sqD'];
@@ -25,12 +26,19 @@ export default function Squares() {
   // of the currently active square. On page load there's no active square,
   // so the value of 'activeSquare' should be null.
 
+  // one slice of state for currently active square
+  const [activeSquare, setActiveSquare] = useState(null);
+  // second slice of state for all squares in the listOfSquareIds array
+  const [squares, setSquares] = useState(listOfSquareIds);
+
   const getClassName = id => {
     // This is NOT a click handler but a helper, used inside the JSX (see below).
     // It should return a string containing the class name of 'active', if the id passed
     // as the argument matches the active square in state, empty string otherwise.
     // Right-click and "inspect element" on the square to see its effect.
-    return ''
+
+    // use the ternary operator 
+    return id === activeSquare ? `square${id.slice(4)}` : '';
   };
 
   const markActive = id => {
@@ -38,21 +46,30 @@ export default function Squares() {
     // Set the id argument to become the active id in state
     // (unless it already is, in which case we should reset
     // the currently active square id back to initial state).
-  };
 
+    // use the ternary operator
+    return id != activeSquare ? setActiveSquare(id) : setActiveSquare(null);
+  };
+  // jsx in the return statement
   return (
     <div className='widget-squares container'>
       <h2>Squares</h2>
+      {/* {notice the braces one line after div.squares enabling us to use .map()} */}
       <div className='squares'>
         {
           // Nasty bug! We should map over a slice of state, instead of 'listOfSquareIds'.
           // We might say: "it works, though!" But if the list of squares is not state,
           // we could never add squares, change squares or remove squares in the future. Fix!
-          listOfSquareIds.map(id =>
+
+          // square.map to use a slice of state as our array instead of listOfSquareIds as array
+          squares.map(id => 
+            // we are inputting elements of the array and returning an entire square component
             <div
               id={id}
-              key={id}
-              className={`square${getClassName(id)}`}
+              // significance of the key?
+              key={squares.indexOf(id)}
+              // set the className, not find it
+              className={getClassName(id)}
               onClick={() => markActive(id)}
             >
             </div>
